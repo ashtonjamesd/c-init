@@ -4,12 +4,18 @@
 #include <sys/stat.h>
 
 #include "cinit.h"
+#include "version.h"
 
 int help() {
     printf("usage: cinit <name> [path]\n");
     printf("  - name: the name of your project\n");
     printf("\n");
 
+    return 0;
+}
+
+int version() {
+    printf("%s\n", CINIT_VERSION_LONG);
     return 0;
 }
 
@@ -85,6 +91,10 @@ int main(int argc, char *argv[]) {
         if (strcmp(argv[i], "help") == 0) return help();
         if (strcmp(argv[i], "--help") == 0) return help();
         if (strcmp(argv[i], "-h") == 0) return help();
+        
+        if (strcmp(argv[i], "-v") == 0) return version();
+        if (strcmp(argv[i], "--version") == 0) return version();
+        if (strcmp(argv[i], "version") == 0) return version();
     }
 
     char *command = argv[1];
