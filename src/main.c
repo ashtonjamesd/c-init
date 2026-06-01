@@ -69,7 +69,6 @@ int new(ProjectScaffolder ps, char *name) {
 
     #define MAIN_C "main.c"
     #define BUILD_C "build.c"
-    #define CINIT_C "cinit.h"
 
     printf("scaffolding project..\n\n");
 
@@ -87,9 +86,6 @@ int new(ProjectScaffolder ps, char *name) {
     if (!create_project_file(BUILD_C)) return 1;
     if (!setup_build_c(BUILD_C)) return 1;
 
-    if (!create_project_file(LIB "/" CINIT_C)) return 1;
-    if (!setup_cinit_c(LIB "/" CINIT_C)) return 1;
-    
     printf("\ncompleted c project scaffold!\n\n");
 
     return 0;

@@ -30,6 +30,22 @@ typedef enum {
     GCC_Og,
 } OptimizeLevel;
 
+typedef enum {
+    C89,
+    C99,
+    C11,
+    C17,
+    C23,
+} CStandard;
+
+typedef enum {
+    WARN_NONE    = 0,
+    WARN_ALL     = 1 << 0,
+    WARN_EXTRA   = 1 << 1,
+    WARN_PEDANTIC = 1 << 2,
+    WARN_ERROR   = 1 << 3,
+} WarningFlags;
+
 typedef struct {
     char **srcs;
     size_t srcs_count;
@@ -37,6 +53,9 @@ typedef struct {
 
     Compiler compiler;
     OptimizeLevel optimize_level;
+    CStandard standard;
+    int warnings;
+    char *cflags;
     char *exe_name;
 } Project;
 
@@ -161,8 +180,31 @@ void cinit_optimize_with(Project *p, OptimizeLevel optimize) {
     p->optimize_level = optimize;
 }
 
+void cinit_standard(Project *p, CStandard standard) {
+    p->standard = standard;
+}
+
+void cinit_warnings(Project *p, int flags) {
+    p->warnings = flags;
+}
+
+void cinit_cflags(Project *p, const char *flags) {
+    p->cflags = strdup(flags);
+}
+
 void cinit_build_with(Project *p, Compiler compiler) {
     p->compiler = compiler;
+}
+
+static const char *get_standard_name(CStandard standard) {
+    switch (standard) {
+        case C89: return "-std=c89";
+        case C99: return "-std=c99";
+        case C11: return "-std=c11";
+        case C17: return "-std=c17";
+        case C23: return "-std=c23";
+        default: return "";
+    }
 }
 
 static char *get_optimize_name(OptimizeLevel optimize) {
@@ -219,6 +261,30 @@ void cinit_build(Project *p) {
             " %s", get_optimize_name(p->optimize_level)
         );
 
+    const char *std = get_standard_name(p->standard);
+    if (strlen(std) > 0) {
+        offset += snprintf(
+                cmd + offset, sizeof(cmd) - offset,
+                " %s", std
+            );
+    }
+
+    if (p->warnings & WARN_ALL)
+        offset += snprintf(cmd + offset, sizeof(cmd) - offset, " -Wall");
+    if (p->warnings & WARN_EXTRA)
+        offset += snprintf(cmd + offset, sizeof(cmd) - offset, " -Wextra");
+    if (p->warnings & WARN_PEDANTIC)
+        offset += snprintf(cmd + offset, sizeof(cmd) - offset, " -pedantic");
+    if (p->warnings & WARN_ERROR)
+        offset += snprintf(cmd + offset, sizeof(cmd) - offset, " -Werror");
+
+    if (p->cflags) {
+        offset += snprintf(
+                cmd + offset, sizeof(cmd) - offset,
+                " %s", p->cflags
+            );
+    }
+
     system(cmd);
 
     // write exe path to .cinit/last_build
@@ -266,27 +332,6 @@ static char *read_file(char *path) {
     return buf;
 }
 
-bool setup_cinit_c(char *path) {
-    FILE *cinit_file = fopen(path, "w");
-    if (!cinit_file) {
-        fprintf(stderr, "failed to setup '%s'", path);
-        return false;
-    }
-
-    // char *content = read_file("cinit.h");
-
-    // fwrite(
-    //     content,
-    //     1,
-    //     strlen(content),
-    //     cinit_file
-    // );
-
-    fclose(cinit_file);
-
-    return true;
-}
-
 bool setup_build_c(char *path) {
     FILE *build_file = fopen(path, "w");
     if (!build_file) {
@@ -299,12 +344,18 @@ bool setup_build_c(char *path) {
         "\n"
         "void cinit_build_project(void) {\n"
         "   Project p = cinit_project();\n"
+        "   \n"
+        "   cinit_build_with(&p, GCC);\n"
+        "   cinit_use_directory(&p, \"src\");\n"
         "   cinit_build_exe_called(&p, \"myprogram\");\n"
-        "   cinit_build_with(&p, GCC);\n\n"
+        "   \n"
         "   cinit_optimize_with(&p, GCC_O3);\n"
-        "   cinit_use_directory(&p, \"src\");\n\n"
+        "   cinit_warnings(&p, WARN_ALL | WARN_EXTRA | WARN_PEDANTIC);\n"
+        "   cinit_cflags(&p, \"-fsanitize=address\");\n"
+        "   \n"
         "   cinit_build(&p);\n"
-        "}\n\n"
+        "}"
+        "\n\n"
         "int main(void) {\n"
         "   cinit_build_project();\n"
         "   return 0;\n"
