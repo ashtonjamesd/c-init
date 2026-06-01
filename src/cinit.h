@@ -347,7 +347,7 @@ bool setup_build_c(char *path) {
         "   \n"
         "   cinit_build_with(&p, GCC);\n"
         "   cinit_use_directory(&p, \"src\");\n"
-        "   cinit_build_exe_called(&p, \"myprogram\");\n"
+        "   cinit_build_exe_called(&p, \"build/exe\");\n"
         "   \n"
         "   cinit_optimize_with(&p, GCC_O3);\n"
         "   cinit_warnings(&p, WARN_ALL | WARN_EXTRA | WARN_PEDANTIC);\n"
