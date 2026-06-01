@@ -8,6 +8,7 @@
 
 #include <sys/stat.h>
 #include <dirent.h>
+#include <unistd.h>
 
 typedef struct {
     bool quiet;
@@ -36,6 +37,7 @@ typedef struct {
 
     Compiler compiler;
     OptimizeLevel optimize_level;
+    char *exe_name;
 } Project;
 
 bool make_directory(const char *name) {
@@ -113,7 +115,11 @@ Project cinit_project() {
     return p;
 }
 
-void add_source_file(Project *p, char *src) {
+void cinit_build_exe_called(Project *p, char *name) {
+    p->exe_name = name;
+}
+
+void cinit_add_source_file(Project *p, char *src) {
     if (p->srcs_count == p->srcs_capacity) {
         p->srcs_capacity *= 2;
         
@@ -144,7 +150,7 @@ void cinit_use_directory(Project *p, char *root) {
 
         char *path = malloc(strlen(root) + 1 + len + 1);
         sprintf(path, "%s/%s", root, name);
-        add_source_file(p, path);
+        cinit_add_source_file(p, path);
     }
 
     closedir(dir);
@@ -181,24 +187,30 @@ static char *get_compiler_name(Compiler compiler) {
 }
 
 void cinit_build(Project *p) {
+    char cwd[1024];
+    if (!getcwd(cwd, sizeof(cwd))) {
+        fprintf(stderr, "failed to get current directory\n");
+        return;
+    }
+
     char cmd[4096];
     size_t offset = 0;
 
     offset += snprintf(
-            cmd + offset, sizeof(cmd) - offset, 
+            cmd + offset, sizeof(cmd) - offset,
             "%s", get_compiler_name(p->compiler)
         );
 
     for (size_t i = 0; i < p->srcs_count; i++) {
         offset += snprintf(
-                cmd + offset, sizeof(cmd) - offset, 
+                cmd + offset, sizeof(cmd) - offset,
                 " %s", p->srcs[i]
             );
     }
 
     offset += snprintf(
             cmd + offset, sizeof(cmd) - offset,
-            " -o output"
+            " -o %s/%s", cwd, p->exe_name
         );
     
     offset += snprintf(
@@ -277,6 +289,7 @@ bool setup_build_c(char *path) {
         "\n"
         "void cinit_build_project(void) {\n"
         "   Project p = cinit_project();\n"
+        "   cinit_build_exe_called(&p, \"myprogram\");"
         "   cinit_build_with(&p, GCC);\n\n"
         "   cinit_optimize_with(&p, GCC_O3);\n"
         "   cinit_use_directory(&p, \"src\");\n\n"
