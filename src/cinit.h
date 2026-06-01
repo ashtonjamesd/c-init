@@ -360,7 +360,7 @@ bool setup_build_c(char *path) {
         "   cinit_build(&p);\n"
         "}"
         "\n\n"
-        "// the entry point to the project builder"
+        "// the entry point to the project builder\n"
         "int main(void) {\n"
         "   cinit_build_project();\n"
         "   return 0;\n"
