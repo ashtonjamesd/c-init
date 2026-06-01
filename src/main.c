@@ -3,31 +3,52 @@
 #include <string.h>
 #include <sys/stat.h>
 
-#include "cinit.h"
+#include "comet.h"
 #include "version.h"
 
-int help() {
-    printf("usage: cinit <name> [path]\n");
-    printf("  - name: the name of your project\n");
-    printf("\n");
+#define BUILD_OUTPUT "_project_build"
+#define SRC "src"
+#define BUILD "build"
+#define TEST "test"
+#define LIB "lib"
 
+#define MAIN_C "main.c"
+#define BUILD_C "build.c"
+#define COMPILER "gcc"
+#define LAST_BUILD_PATH "/.comet/last_build"
+
+int help() {
+    printf("usage: comet <command> [options]\n\n");
+    printf("commands:\n");
+    printf("  new            scaffold a new c project\n");
+    printf("  build          compile the project using build.c\n");
+    printf("  run            build and run the executable\n");
+    printf("  clean          remove all build artifacts\n");
+    printf("\n");
+    printf("options:\n");
+    printf("  --quiet        suppress output during scaffolding\n");
+    printf("  --help, -h     show this help message\n");
+    printf("  --version, -v  show version information\n");
+    printf("\n");
+ 
     return 0;
 }
 
 int version() {
-    printf("%s\n", CINIT_VERSION_LONG);
+    printf("%s\n", APP_NAME_AND_VERSION);
     return 0;
 }
 
 int build() {
-    int built = system("gcc build.c -o _project_build");
+    int built = system(COMPILER " " BUILD_C " -o " BUILD_OUTPUT);
     if (built == -1) {
         fprintf(stderr, "failed to build the build file.");
         return 1;
     }
 
-    int ran = system("./_project_build");
-    remove("_project_build");
+    int ran = system("./" BUILD_OUTPUT);
+    remove(BUILD_OUTPUT);
+
     if (ran == -1) {
         fprintf(stderr, "failed to run the build file.");
         return 1;
@@ -37,9 +58,9 @@ int build() {
 }
 
 int clean() {
-    system("rm -rf build");
-    system("rm -f _project_build");
-    system("mkdir build");
+    system("rm -rf" BUILD);
+    system("rm -f " BUILD_OUTPUT);
+    system("mkdir" BUILD);
     printf("cleaned build artifacts.\n");
     return 0;
 }
@@ -48,9 +69,9 @@ int run() {
     int built = build();
     if (built != 0) return 1;
 
-    FILE *f = fopen("build/.cinit/last_build", "r");
+    FILE *f = fopen(BUILD LAST_BUILD_PATH, "r");
     if (!f) {
-        fprintf(stderr, "no build found. run 'cinit build' first.\n");
+        fprintf(stderr, "no build found. run 'comet build' first.\n");
         return 1;
     }
 
@@ -62,14 +83,6 @@ int run() {
 }
 
 int new(ProjectScaffolder ps, char *name) {
-    #define SRC "src"
-    #define BUILD "build"
-    #define TEST "test"
-    #define LIB "lib"
-
-    #define MAIN_C "main.c"
-    #define BUILD_C "build.c"
-
     printf("scaffolding project..\n\n");
 
     if (!create_project_directory(SRC, ps)) return 1;
@@ -77,13 +90,13 @@ int new(ProjectScaffolder ps, char *name) {
     if (!create_project_directory(TEST, ps)) return 1;
     if (!create_project_directory(LIB, ps)) return 1;
 
-    if (!create_project_file(SRC "/" MAIN_C)) return 1;
+    if (!create_project_file(SRC "/" MAIN_C, ps)) return 1;
     if (!setup_main_c(SRC "/" MAIN_C)) return 1;
 
-    if (!create_project_file(TEST "/" MAIN_C)) return 1;
+    if (!create_project_file(TEST "/" MAIN_C, ps)) return 1;
     if (!setup_main_c(TEST "/" MAIN_C)) return 1;
 
-    if (!create_project_file(BUILD_C)) return 1;
+    if (!create_project_file(BUILD_C, ps)) return 1;
     if (!setup_build_c(BUILD_C)) return 1;
 
     printf("\ncompleted c project scaffold!\n\n");
@@ -93,8 +106,7 @@ int new(ProjectScaffolder ps, char *name) {
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
-        fprintf(stderr, "usage: cinit <command>\n");
-        return 1;
+        return version();
     }
 
     bool quiet = false;

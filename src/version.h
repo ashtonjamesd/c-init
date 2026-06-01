@@ -1,7 +1,9 @@
 #ifndef version_h
 #define version_h
 
-#define CINIT_VERSION       "1.0.0"
-#define CINIT_VERSION_LONG  "cinit/" CINIT_VERSION
+#define APP_NAME    "comet"
+#define APP_VERSION "0.0.0"
+
+#define APP_NAME_AND_VERSION (APP_NAME "/" APP_VERSION)
 
 #endif

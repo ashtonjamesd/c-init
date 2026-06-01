@@ -1,7 +1,7 @@
-# c-init
+# comet
 
 ## Install
 
 ```
-curl -fsSL https://raw.githubusercontent.com/ashtonjamesd/c-init/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ashtonjamesd/comet/main/install.sh | bash
 ```

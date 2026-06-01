@@ -1,5 +1,5 @@
-#ifndef cinit_h
-#define cinit_h
+#ifndef comet_h
+#define comet_h
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -90,8 +90,10 @@ bool create_file(const char *path) {
     return true;
 }
 
-bool create_project_file(const char *path) {
-    printf("creating file '%s'\n", path);
+bool create_project_file(const char *path, ProjectScaffolder ps) {
+    if (!ps.quiet) {
+        printf("creating file '%s'\n", path);
+    }
 
     return create_file(path);
 }
@@ -123,7 +125,7 @@ bool setup_main_c(char *path) {
     return true;
 }
 
-Project cinit_project() {
+Project comet_project() {
     Project p = {
         .srcs = malloc(sizeof(char *)),
         .srcs_count = 0,
@@ -135,11 +137,11 @@ Project cinit_project() {
     return p;
 }
 
-void cinit_build_exe_called(Project *p, char *name) {
+void comet_build_exe_called(Project *p, char *name) {
     p->exe_name = name;
 }
 
-void cinit_add_source_file(Project *p, char *src) {
+void comet_add_source_file(Project *p, char *src) {
     if (p->srcs_count == p->srcs_capacity) {
         p->srcs_capacity *= 2;
         
@@ -152,7 +154,7 @@ void cinit_add_source_file(Project *p, char *src) {
     p->srcs_count += 1;
 }
 
-void cinit_use_directory(Project *p, char *root) {
+void comet_use_directory(Project *p, char *root) {
     DIR *dir = opendir(root);
     if (!dir) {
         fprintf(stderr, "failed to open directory '%s'\n", root);
@@ -170,29 +172,29 @@ void cinit_use_directory(Project *p, char *root) {
 
         char *path = malloc(strlen(root) + 1 + len + 1);
         sprintf(path, "%s/%s", root, name);
-        cinit_add_source_file(p, path);
+        comet_add_source_file(p, path);
     }
 
     closedir(dir);
 }
 
-void cinit_optimize_with(Project *p, OptimizeLevel optimize) {
+void comet_optimize_with(Project *p, OptimizeLevel optimize) {
     p->optimize_level = optimize;
 }
 
-void cinit_standard(Project *p, CStandard standard) {
+void comet_standard(Project *p, CStandard standard) {
     p->standard = standard;
 }
 
-void cinit_warnings(Project *p, int flags) {
+void comet_warnings(Project *p, int flags) {
     p->warnings = flags;
 }
 
-void cinit_cflags(Project *p, const char *flags) {
+void comet_cflags(Project *p, const char *flags) {
     p->cflags = strdup(flags);
 }
 
-void cinit_build_with(Project *p, Compiler compiler) {
+void comet_build_with(Project *p, Compiler compiler) {
     p->compiler = compiler;
 }
 
@@ -229,7 +231,7 @@ static char *get_compiler_name(Compiler compiler) {
     }
 }
 
-void cinit_build(Project *p) {
+void comet_build(Project *p) {
     char cwd[1024];
     if (!getcwd(cwd, sizeof(cwd))) {
         fprintf(stderr, "failed to get current directory\n");
@@ -287,11 +289,10 @@ void cinit_build(Project *p) {
 
     system(cmd);
 
-    // write exe path to .cinit/last_build
-    mkdir("build/.cinit", 0700);
+    mkdir("build/.comet", 0700);
     char last_build[2048];
     snprintf(last_build, sizeof(last_build), "%s/%s", cwd, p->exe_name);
-    FILE *f = fopen("build/.cinit/last_build", "w");
+    FILE *f = fopen("build/.comet/last_build", "w");
     if (f) {
         fprintf(f, "%s", last_build);
         fclose(f);
@@ -340,29 +341,31 @@ bool setup_build_c(char *path) {
     }
 
     char *content = 
-        "#include <cinit.h>\n"
+        "#include <comet.h>\n"
         "\n"
-        "void cinit_build_project(void) {\n"
+        "int comet_build_project(void) {\n"
         "   // initialize project configuration\n"
-        "   Project p = cinit_project();\n"
+        "   Project p = comet_project();\n"
         "   // specify a compiler\n"
-        "   cinit_build_with(&p, GCC);\n"
+        "   comet_build_with(&p, GCC);\n"
         "   \n"
         "   // specify a directory to compiler sources from\n"
-        "   cinit_use_directory(&p, \"src\");\n"
+        "   comet_use_directory(&p, \"src\");\n"
         "   // specify the output name and location of the executable\n"
-        "   cinit_build_exe_called(&p, \"build/exe\");\n"
+        "   comet_build_exe_called(&p, \"build/exe\");\n"
         "   \n"
         "   // specify compiler flags\n"
-        "   cinit_cflags(&p, \"-Wall -Wextra -Werror\");\n"
+        "   comet_cflags(&p, \"-Wall -Wextra -Werror\");\n"
         "   \n"
         "   // build the project\n"
-        "   cinit_build(&p);\n"
+        "   comet_build(&p);\n"
+        "   \n"
+        "   return 0;\n"
         "}"
         "\n\n"
         "// the entry point to the project builder\n"
         "int main(void) {\n"
-        "   cinit_build_project();\n"
+        "   comet_build_project();\n"
         "   return 0;\n"
         "}\n";
 
