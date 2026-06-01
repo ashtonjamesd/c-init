@@ -37,9 +37,19 @@ int build() {
 
 int run() {
     int built = build();
-    if (!built) return 1;
+    if (built != 0) return 1;
 
-    return 0;
+    FILE *f = fopen(".cinit/last_build", "r");
+    if (!f) {
+        fprintf(stderr, "no build found. run 'cinit build' first.\n");
+        return 1;
+    }
+
+    char exe_path[2048] = {0};
+    fread(exe_path, 1, sizeof(exe_path) - 1, f);
+    fclose(f);
+
+    return system(exe_path);
 }
 
 int new(ProjectScaffolder ps, char *name) {
