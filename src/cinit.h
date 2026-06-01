@@ -222,10 +222,10 @@ void cinit_build(Project *p) {
     system(cmd);
 
     // write exe path to .cinit/last_build
-    mkdir(".cinit", 0700);
+    mkdir("build/.cinit", 0700);
     char last_build[2048];
     snprintf(last_build, sizeof(last_build), "%s/%s", cwd, p->exe_name);
-    FILE *f = fopen(".cinit/last_build", "w");
+    FILE *f = fopen("build/.cinit/last_build", "w");
     if (f) {
         fprintf(f, "%s", last_build);
         fclose(f);

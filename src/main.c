@@ -38,7 +38,6 @@ int build() {
 
 int clean() {
     system("rm -rf build");
-    system("rm -rf .cinit");
     system("rm -f _project_build");
     system("mkdir build");
     printf("cleaned build artifacts.\n");
@@ -49,7 +48,7 @@ int run() {
     int built = build();
     if (built != 0) return 1;
 
-    FILE *f = fopen(".cinit/last_build", "r");
+    FILE *f = fopen("build/.cinit/last_build", "r");
     if (!f) {
         fprintf(stderr, "no build found. run 'cinit build' first.\n");
         return 1;
