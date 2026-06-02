@@ -363,7 +363,15 @@ bool comet_fetch_header(char *repo, char *header) {
     char dest[512];
     snprintf(dest, sizeof(dest), "lib/%s", filename);
 
-    if (access(dest, F_OK) == 0) return true;
+    if (access(dest, F_OK) == 0) {
+        char del_command[512];
+        snprintf(del_command, sizeof(del_command), "rm -rf %s", dest);
+
+        if (system(del_command)) {
+            fprintf(stderr, "failed to delete and re-fetch dependency");
+            return false;
+        }
+    }
 
     char url[512];
     snprintf(url, sizeof(url), "https://raw.githubusercontent.com/%s/main/%s", repo, header);

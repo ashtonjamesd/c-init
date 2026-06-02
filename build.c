@@ -6,7 +6,7 @@ Project comet_build_project(void) {
    comet_build_with(&p, GCC);
    
    comet_use_directory(&p, "src");
-   comet_build_exe_called(&p, "build/exe");
+   comet_build_exe_called(&p, "build/comet");
 
    comet_cflags(&p, "-Wall -Wextra -Werror");
    comet_standard(&p, C99);
