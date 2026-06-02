@@ -4,8 +4,6 @@
 ***
 
 <br/>
-
-<br/>
 <br/>
 
 Scaffold, build, and run your C projects from C.
