@@ -105,7 +105,7 @@ int run() {
     return system(exe_path);
 }
 
-int new(ProjectScaffolder ps, char *name) {
+int init(ProjectScaffolder ps, char *name) {
     printf("scaffolding project..\n\n");
 
     if (!create_project_directory(SRC, ps)) return 1;
@@ -162,12 +162,12 @@ int main(int argc, char *argv[]) {
         return run();
     } else if (strcmp(command, "test") == 0) {
         return test();
-    } else if (strcmp(command, "new") == 0) {
+    } else if (strcmp(command, "init") == 0) {
         ProjectScaffolder ps = {
             .quiet = quiet,
         };
         
-        return new(ps, argv[1]);
+        return init(ps, argv[1]);
     } else {
         fprintf(stderr, "unknown command '%s'", command);
         return 1;
