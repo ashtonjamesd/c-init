@@ -119,7 +119,7 @@ FILE *main_file = fopen(path, "w");
     }
 
     char *content = 
-        "#include \"lib/ctest.h\"\n"
+        "#include \"../lib/ctest.h\"\n"
         "\n"
         "should(correctly_add_two_numbers) {\n"
         "   expect(2 + 5 == 7);\n"
