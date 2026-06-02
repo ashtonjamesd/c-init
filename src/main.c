@@ -59,9 +59,9 @@ int build() {
 }
 
 int clean() {
-    system("rm -rf" BUILD);
+    system("rm -rf " BUILD);
     system("rm -f " BUILD_OUTPUT);
-    system("mkdir" BUILD);
+    system("mkdir " BUILD);
 
     printf("cleaned build artifacts.\n");
 
