@@ -20,9 +20,10 @@
 int help() {
     printf("usage: comet <command> [options]\n\n");
     printf("commands:\n");
-    printf("  new            scaffold a new c project\n");
+    printf("  init            scaffold a new c project\n");
     printf("  build          compile the project using build.c\n");
     printf("  run            build and run the executable\n");
+    printf("  test           compile and run tests\n");
     printf("  clean          remove all build artifacts\n");
     printf("\n");
     printf("options:\n");
@@ -61,7 +62,29 @@ int clean() {
     system("rm -rf" BUILD);
     system("rm -f " BUILD_OUTPUT);
     system("mkdir" BUILD);
+
     printf("cleaned build artifacts.\n");
+
+    return 0;
+}
+
+int test() {
+    int built = system(COMPILER " " TEST "/" MAIN_C " -o " BUILD "/_test_runner");
+    if (built != 0) {
+        fprintf(stderr, "failed to compile tests.\n");
+        return 1;
+    }
+
+    printf("running tests...\n\n");
+    int result = system("./" BUILD "/_test_runner");
+    remove(BUILD "/_test_runner");
+
+    if (result != 0) {
+        fprintf(stderr, "\ntests failed.\n");
+        return 1;
+    }
+
+    printf("\nall tests passed.\n");
     return 0;
 }
 
@@ -131,6 +154,8 @@ int main(int argc, char *argv[]) {
         return clean();
     } else if (strcmp(command, "run") == 0) {
         return run();
+    } else if (strcmp(command, "test") == 0) {
+        return test();
     } else if (strcmp(command, "new") == 0) {
         ProjectScaffolder ps = {
             .quiet = quiet,

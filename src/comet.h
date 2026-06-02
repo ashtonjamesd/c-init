@@ -198,6 +198,10 @@ void comet_build_with(Project *p, Compiler compiler) {
     p->compiler = compiler;
 }
 
+void comet_require(Project *p, char *github_url, char *version) {
+    // todo!
+}
+
 static const char *get_standard_name(CStandard standard) {
     switch (standard) {
         case C89: return "-std=c89";
@@ -349,7 +353,7 @@ bool setup_build_c(char *path) {
         "   // specify a compiler\n"
         "   comet_build_with(&p, GCC);\n"
         "   \n"
-        "   // specify a directory to compiler sources from\n"
+        "   // specify a directory to compile sources from\n"
         "   comet_use_directory(&p, \"src\");\n"
         "   // specify the output name and location of the executable\n"
         "   comet_build_exe_called(&p, \"build/exe\");\n"

@@ -11,7 +11,7 @@ curl -fsSL https://raw.githubusercontent.com/ashtonjamesd/comet/main/install.sh 
 ## Quick start
 
 ```bash
-comet new myapp
+comet init myapp
 cd myapp
 
 comet run
@@ -19,7 +19,7 @@ comet run
 
 ## Project structure
 
-`comet new myapp` generates the following:
+`comet init myapp` generates the following:
 
 ```
 myapp/
@@ -57,7 +57,7 @@ int main(void) {
 ## Commands
 
 ```
-comet new <name>    scaffold a new project
+comet init <name>    scaffold a new project
 comet build         compile the project
 comet run           build and run
 comet clean         remove build artifacts
