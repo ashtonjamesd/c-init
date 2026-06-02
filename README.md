@@ -16,12 +16,7 @@ Build, scaffold, and run your C projects from C.
 ## Quick start
 
 ```bash
-comet init
-cd myapp
-
-comet fetch
-comet build
-comet run
+comet init && comet run
 ```
 
 ## Project structure
