@@ -426,7 +426,7 @@ bool setup_build_c(char *path) {
         "}"
         "\n\n"
         "int comet_fetch(Project *p) {\n"
-        "   if (!comet_fetch_header(p, \"ashtonjamesd/str\", \"src/str.h\")) return 1;\n"
+        "   if (!comet_fetch_header(p, \"ashtonjamesd/ctest\", \"ctest.h\")) return 1;\n"
         "   return 0;\n"
         "}\n"
         "\n"
