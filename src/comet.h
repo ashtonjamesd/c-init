@@ -356,9 +356,7 @@ int comet_build(Project *p) {
     return 0;
 }
 
-bool comet_fetch_header(Project *p, char *repo, char *header) {
-    (void)p;
-
+bool comet_fetch_header(char *repo, char *header) {
     const char *filename = strrchr(header, '/');
     filename = filename ? filename + 1 : header;
 
@@ -411,7 +409,7 @@ bool setup_build_c(char *path) {
         "// fetch project dependencies into lib/\n"
         "int comet_fetch(Project *p) {\n"
         "   // fetch a single header file from a github repo\n"
-        "   if (!comet_fetch_header(p, \"ashtonjamesd/ctest\", \"ctest.h\")) return 1;\n"
+        "   if (!comet_fetch_header(\"ashtonjamesd/ctest\", \"ctest.h\")) return 1;\n"
         "   return 0;\n"
         "}\n"
         "\n"
