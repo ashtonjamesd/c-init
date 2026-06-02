@@ -122,6 +122,7 @@ int run() {
 }
 
 int init(char *name) {
+    (void)name;
     printf("scaffolding project..\n\n");
 
     if (!create_project_directory(SRC)) return 1;

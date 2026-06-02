@@ -360,8 +360,7 @@ static char *read_file(char *path) {
 }
 
 bool comet_fetch_header(Project *p, char *repo, char *header) {
-    // repo = ashtonjamesd/str
-    // header = src/str.h
+    (void)p;
 
     const char *filename = strrchr(header, '/');
     filename = filename ? filename + 1 : header;
