@@ -408,7 +408,7 @@ bool setup_build_c(char *path) {
     char *content = 
         "#include <comet.h>\n"
         "\n"
-        "int comet_build_project(void) {\n"
+        "Project comet_build_project(void) {\n"
         "   // initialize project configuration\n"
         "   Project p = comet_project();\n"
         "   // specify a compiler\n"
@@ -422,14 +422,11 @@ bool setup_build_c(char *path) {
         "   // specify compiler flags\n"
         "   comet_cflags(&p, \"-Wall -Wextra -Werror\");\n"
         "   \n"
-        "   // build the project\n"
-        "   comet_build(&p);\n"
-        "   \n"
-        "   return 0;\n"
+        "   return p\n";
         "}"
         "\n\n"
-        "int comet_fetch(void) {\n"
-        "   comet_fetch_header()\n"
+        "int comet_fetch(Project *p) {\n"
+        "   if (!comet_fetch_header(p, \"ashtonjamesd/str\", \"src/str.h\")) return 1;\n"
         "   return 0;\n"
         "}\n"
         "\n"
@@ -439,12 +436,14 @@ bool setup_build_c(char *path) {
         "   if (argc < 2) return 1;\n"
         "   \n"
         "   char *arg = argv[1];\n"
+        "   Project *p = comet_build_project();\n"
         "   if (strcmp(arg, \"build\") == 0) {\n"
         "       return comet_build_project();\n"
         "   } else if (strcmp(arg, \"fetch\") == 0) {\n"
-        "       return comet_fetch();\n"
+        "       return comet_fetch(&p);\n"
         "   }\n"
-        "       return 0;\n"
+        "   \n"
+        "   return 0;\n"
         "}\n";
 
     fwrite(
