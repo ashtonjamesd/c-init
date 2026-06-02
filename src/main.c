@@ -75,7 +75,6 @@ int test() {
         return 1;
     }
 
-    printf("running tests...\n\n");
     int result = system("./" BUILD "/_test_runner");
     remove(BUILD "/_test_runner");
 
@@ -84,7 +83,6 @@ int test() {
         return 1;
     }
 
-    printf("\nall tests passed.\n");
     return 0;
 }
 
@@ -105,7 +103,7 @@ int run() {
     return system(exe_path);
 }
 
-int new(ProjectScaffolder ps, char *name) {
+int init(ProjectScaffolder ps, char *name) {
     printf("scaffolding project..\n\n");
 
     if (!create_project_directory(SRC, ps)) return 1;
@@ -117,7 +115,7 @@ int new(ProjectScaffolder ps, char *name) {
     if (!setup_main_c(SRC "/" MAIN_C)) return 1;
 
     if (!create_project_file(TEST "/" MAIN_C, ps)) return 1;
-    if (!setup_main_c(TEST "/" MAIN_C)) return 1;
+    if (!setup_test_c(TEST "/" MAIN_C)) return 1;
 
     if (!create_project_file(BUILD_C, ps)) return 1;
     if (!setup_build_c(BUILD_C)) return 1;
@@ -156,12 +154,12 @@ int main(int argc, char *argv[]) {
         return run();
     } else if (strcmp(command, "test") == 0) {
         return test();
-    } else if (strcmp(command, "new") == 0) {
+    } else if (strcmp(command, "init") == 0) {
         ProjectScaffolder ps = {
             .quiet = quiet,
         };
-        
-        return new(ps, argv[1]);
+
+        return init(ps, argv[1]);
     } else {
         fprintf(stderr, "unknown command '%s'", command);
         return 1;

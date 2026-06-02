@@ -98,6 +98,39 @@ bool create_project_file(const char *path, ProjectScaffolder ps) {
     return create_file(path);
 }
 
+bool setup_test_c(char *path) {
+FILE *main_file = fopen(path, "w");
+    if (!main_file) {
+        fprintf(stderr, "failed to setup '%s'", path);
+        return false;
+    }
+
+    char *content =
+        "#include \"../lib/ctest.h\"\n"
+        "\n"
+        "should(correctly_add_two_numbers) {\n"
+        "   expect(2 + 5 == 7);\n"
+        "}\n"
+        "\n"
+        "int main(void) {\n"
+        "   // run a unit test\n"
+        "   run_test(correctly_add_two_numbers);\n"
+        "   conclude_test_runner();\n\n"
+        "   return 0;\n"
+        "}\n";
+
+    fwrite(
+        content,
+        1,
+        strlen(content),
+        main_file
+    );
+
+    fclose(main_file);
+
+    return true;
+}
+
 bool setup_main_c(char *path) {
     FILE *main_file = fopen(path, "w");
     if (!main_file) {
