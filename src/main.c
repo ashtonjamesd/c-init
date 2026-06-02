@@ -6,15 +6,18 @@
 #include "comet.h"
 #include "version.h"
 
-#define BUILD_OUTPUT "_project_build"
 #define SRC "src"
 #define BUILD "build"
 #define TEST "test"
 #define LIB "lib"
 
+#define BUILD_OUTPUT BUILD "/_project_build"
+#define TEST_OUTPUT BUILD "/_test_runner"
+
 #define MAIN_C "main.c"
 #define BUILD_C "build.c"
-#define COMPILER "gcc"
+#define TEST_MAIN_C TEST "/" MAIN_C
+
 #define LAST_BUILD_PATH "/.comet/last_build"
 
 int help() {
@@ -41,7 +44,7 @@ int version() {
 }
 
 int build() {
-    int built = system(COMPILER " " BUILD_C " -o " BUILD_OUTPUT);
+    int built = system("gcc " BUILD_C " -o " BUILD_OUTPUT);
     if (built != 0) {
         fprintf(stderr, "failed to build the build file.");
         return 1;
@@ -69,7 +72,7 @@ int clean() {
 }
 
 int fetch() {
-    int built = system(COMPILER " " BUILD_C " -o " BUILD_OUTPUT);
+    int built = system("gcc " BUILD_C " -o " BUILD_OUTPUT);
     if (built != 0) {
         fprintf(stderr, "failed to build the build file.");
         return 1;
@@ -87,14 +90,14 @@ int fetch() {
 }
 
 int test() {
-    int built = system(COMPILER " " TEST "/" MAIN_C " -o " BUILD "/_test_runner");
+    int built = system("gcc " TEST_MAIN_C " -o " TEST_OUTPUT);
     if (built != 0) {
         fprintf(stderr, "failed to compile tests.\n");
         return 1;
     }
 
-    int result = system("./" BUILD "/_test_runner");
-    remove(BUILD "/_test_runner");
+    int result = system("./"TEST_OUTPUT);
+    remove(TEST_OUTPUT);
 
     if (result != 0) {
         fprintf(stderr, "\ntests failed.\n");
@@ -159,6 +162,7 @@ int main(int argc, char *argv[]) {
     }
 
     char *command = argv[1];
+    
     if (strcmp(command, "build") == 0) {
         return build();
     } else if (strcmp(command, "clean") == 0) {
