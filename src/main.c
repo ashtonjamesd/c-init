@@ -47,7 +47,7 @@ int build() {
         return 1;
     }
 
-    int ran = system("./" BUILD_OUTPUT);
+    int ran = system("./" BUILD_OUTPUT " build");
     remove(BUILD_OUTPUT);
 
     if (ran == -1) {
@@ -64,6 +64,24 @@ int clean() {
     system("mkdir" BUILD);
 
     printf("cleaned build artifacts.\n");
+
+    return 0;
+}
+
+int fetch() {
+    int built = system(COMPILER " " BUILD_C " -o " BUILD_OUTPUT);
+    if (built == -1) {
+        fprintf(stderr, "failed to build the build file.");
+        return 1;
+    }
+
+    int ran = system("./" BUILD_OUTPUT " fetch");
+    remove(BUILD_OUTPUT);
+
+    if (ran == -1) {
+        fprintf(stderr, "failed to run the build file.");
+        return 1;
+    }
 
     return 0;
 }
@@ -154,6 +172,8 @@ int main(int argc, char *argv[]) {
         return run();
     } else if (strcmp(command, "test") == 0) {
         return test();
+    } else if (strcmp(command, "fetch") == 0) {
+        return fetch();
     } else if (strcmp(command, "init") == 0) {
         ProjectScaffolder ps = {
             .quiet = quiet,
