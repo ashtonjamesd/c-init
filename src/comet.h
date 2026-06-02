@@ -422,7 +422,7 @@ bool setup_build_c(char *path) {
         "   // specify compiler flags\n"
         "   comet_cflags(&p, \"-Wall -Wextra -Werror\");\n"
         "   \n"
-        "   return p\n";
+        "   return p;\n"
         "}"
         "\n\n"
         "int comet_fetch(Project *p) {\n"
