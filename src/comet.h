@@ -413,7 +413,7 @@ bool setup_build_c(char *path) {
         "   char *arg = argv[1];\n"
         "   if (strcmp(arg, \"build\") == 0) {\n"
         "       return comet_build_project();\n"
-        "   } else if (strcmp(arg, "fetch") == 0) {\n"
+        "   } else if (strcmp(arg, \"fetch\") == 0) {\n"
         "       return comet_fetch();\n"
         "   }\n"
         "       return 0;\n"
