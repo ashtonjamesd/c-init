@@ -231,9 +231,6 @@ void comet_build_with(Project *p, Compiler compiler) {
     p->compiler = compiler;
 }
 
-void comet_require(Project *p, char *github_url, char *version) {
-    // todo!
-}
 
 static const char *get_standard_name(CStandard standard) {
     switch (standard) {
@@ -268,11 +265,11 @@ static char *get_compiler_name(Compiler compiler) {
     }
 }
 
-void comet_build(Project *p) {
+int comet_build(Project *p) {
     char cwd[1024];
     if (!getcwd(cwd, sizeof(cwd))) {
         fprintf(stderr, "failed to get current directory\n");
-        return;
+        return 1;
     }
 
     char cmd[4096];
@@ -334,6 +331,8 @@ void comet_build(Project *p) {
         fprintf(f, "%s", last_build);
         fclose(f);
     }
+
+    return 0;
 }
 
 static char *read_file(char *path) {
@@ -370,6 +369,32 @@ static char *read_file(char *path) {
     return buf;
 }
 
+bool comet_fetch_header(Project *p, char *repo, char *header) {
+    // repo = ashtonjamesd/str
+    // header = src/str.h
+
+    char dest[512];
+    snprintf(dest, sizeof(dest), "lib/%s", header);
+
+    if (access(dest, 0700)) return true;
+
+    char url[512];
+    snprintf(url, sizeof(url), "https://raw.githubusercontent.com/%s/main/%s", repo, header);
+
+    char cmd[2048];
+    snprintf(cmd, sizeof(cmd), "curl -sfL %s", url);
+
+    printf("fetching %s -> %s\n", url, dest);
+
+    int result = system(cmd);
+    if (result == -1) {
+        fprintf(stderr, "failed to fetch '%s' from '%s'\n", header, repo);
+        return false;
+    }
+
+    return true;
+}
+
 bool setup_build_c(char *path) {
     FILE *build_file = fopen(path, "w");
     if (!build_file) {
@@ -401,7 +426,7 @@ bool setup_build_c(char *path) {
         "}"
         "\n\n"
         "int comet_fetch(void) {\n"
-        "   printf(\"fetching deps\");\n"
+        "   comet_fetch_header()\n"
         "   return 0;\n"
         "}\n"
         "\n"
