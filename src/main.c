@@ -117,10 +117,16 @@ int new(ProjectScaffolder ps, char *name) {
     if (!setup_main_c(SRC "/" MAIN_C)) return 1;
 
     if (!create_project_file(TEST "/" MAIN_C, ps)) return 1;
-    if (!setup_main_c(TEST "/" MAIN_C)) return 1;
+    if (!setup_test_c(TEST "/" MAIN_C)) return 1;
 
     if (!create_project_file(BUILD_C, ps)) return 1;
     if (!setup_build_c(BUILD_C)) return 1;
+
+    printf("fetching dependencies...\n");
+    if (!fetch_dependency(
+        "https://raw.githubusercontent.com/ashtonjamesd/ctest/main/ctest.h",
+        LIB "/ctest.h"
+    )) return 1;
 
     printf("\ncompleted c project scaffold!\n\n");
 

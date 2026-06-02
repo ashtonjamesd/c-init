@@ -98,6 +98,47 @@ bool create_project_file(const char *path, ProjectScaffolder ps) {
     return create_file(path);
 }
 
+bool fetch_dependency(const char *url, const char *dest) {
+    char cmd[2048];
+    snprintf(cmd, sizeof(cmd), "curl -sfL \"%s\" -o \"%s\"", url, dest);
+
+    int result = system(cmd);
+    if (result != 0) {
+        fprintf(stderr, "failed to fetch dependency from '%s'\n", url);
+        return false;
+    }
+
+    return true;
+}
+
+bool setup_test_c(char *path) {
+FILE *main_file = fopen(path, "w");
+    if (!main_file) {
+        fprintf(stderr, "failed to setup '%s'", path);
+        return false;
+    }
+
+    char *content = 
+        "#include <stdio.h>\n"
+        "\n"
+        "int main(void) {\n"
+        "   // run a unit test\n"
+        "   run_test(correctly_add_two_numbers);\n\n"
+        "   return 0;\n"
+        "}\n";
+
+    fwrite(
+        content,
+        1,
+        strlen(content),
+        main_file
+    );
+
+    fclose(main_file);
+
+    return true;
+}
+
 bool setup_main_c(char *path) {
     FILE *main_file = fopen(path, "w");
     if (!main_file) {
