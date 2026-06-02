@@ -376,13 +376,13 @@ bool comet_fetch_header(Project *p, char *repo, char *header) {
     char dest[512];
     snprintf(dest, sizeof(dest), "lib/%s", header);
 
-    if (access(dest, 0700)) return true;
+    if (access(dest, F_OK) == 0) return true;
 
     char url[512];
     snprintf(url, sizeof(url), "https://raw.githubusercontent.com/%s/main/%s", repo, header);
 
     char cmd[2048];
-    snprintf(cmd, sizeof(cmd), "curl -sfL %s", url);
+    snprintf(cmd, sizeof(cmd), "curl -sfL \"%s\" -o \"%s\"", url, dest);
 
     printf("fetching %s -> %s\n", url, dest);
 
