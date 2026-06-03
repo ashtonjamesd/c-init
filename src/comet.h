@@ -462,7 +462,7 @@ bool setup_build_c(char *path) {
         "// fetch project dependencies into lib/\n"
         "int comet_fetch(Project *p) {\n"
         "   // fetch a single header file from a github repo\n"
-        "   if (!comet_fetch_header(\"ashtonjamesd/ctest\", \"ctest.h\")) return 1;\n"
+        "   if (!comet_fetch_header(\"ashtonjamesd/claim\", \"claim.h\")) return 1;\n"
         "   return 0;\n"
         "}\n"
         "\n"
