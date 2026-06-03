@@ -369,14 +369,6 @@ int comet_build(Project *p) {
     return 0;
 }
 
-void comet_on_build(Project *p, CometCommandFunc func) {
-    comet_command(p, "build", func);
-}
-
-void comet_on_fetch(Project *p, CometCommandFunc func) {
-    comet_command(p, "fetch", func);
-}
-
 void comet_command(Project *p, const char *name, CometCommandFunc func) {
     if (p->command_count >= COMET_MAX_COMMANDS) {
         fprintf(stderr, "too many commands registered\n");
@@ -385,6 +377,14 @@ void comet_command(Project *p, const char *name, CometCommandFunc func) {
     p->commands[p->command_count].name = name;
     p->commands[p->command_count].func = func;
     p->command_count++;
+}
+
+void comet_on_build(Project *p, CometCommandFunc func) {
+    comet_command(p, "build", func);
+}
+
+void comet_on_fetch(Project *p, CometCommandFunc func) {
+    comet_command(p, "fetch", func);
 }
 
 int comet_run(Project *p, int argc, char *argv[]) {
