@@ -381,12 +381,14 @@ void comet_command(Project *p, const char *name, CometCommandFunc func) {
 
 int comet_run(Project *p, int argc, char *argv[]) {
     if (argc < 2) return 1;
+    
     const char *arg = argv[1];
     for (size_t i = 0; i < p->command_count; i++) {
         if (strcmp(arg, p->commands[i].name) == 0) {
             return p->commands[i].func(p);
         }
     }
+
     fprintf(stderr, "unknown command '%s'\n", arg);
     return 1;
 }

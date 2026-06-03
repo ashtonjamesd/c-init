@@ -23,15 +23,15 @@
 int build() {
     int built = system("gcc " BUILD_C " -o " BUILD_OUTPUT);
     if (built != 0) {
-        fprintf(stderr, "failed to build the build file.");
+        fprintf(stderr, "failed to build the build file.\n");
         return 1;
     }
 
-    int ran = system("./" BUILD_OUTPUT " build");
+    int ran = system("./" BUILD_OUTPUT);
     remove(BUILD_OUTPUT);
 
     if (ran != 0) {
-        fprintf(stderr, "failed to run the build file.");
+        fprintf(stderr, "failed to run the build file.\n");
         return 1;
     }
 
@@ -51,15 +51,15 @@ int clean() {
 int fetch() {
     int built = system("gcc " BUILD_C " -o " BUILD_OUTPUT);
     if (built != 0) {
-        fprintf(stderr, "failed to build the build file.");
+        fprintf(stderr, "failed to build the build file.\n");
         return 1;
     }
 
-    int ran = system("./" BUILD_OUTPUT " fetch");
+    int ran = system("./" BUILD_OUTPUT);
     remove(BUILD_OUTPUT);
 
     if (ran != 0) {
-        fprintf(stderr, "failed to run the build file.");
+        fprintf(stderr, "failed to run the build file.\n");
         return 1;
     }
 
@@ -185,7 +185,7 @@ int main(int argc, char *argv[]) {
     } else if (strcmp(command, "init") == 0) {
         return init();
     } else {
-        fprintf(stderr, "unknown command '%s'", command);
+        fprintf(stderr, "unknown command '%s'\n", command);
         return 1;
     }
     

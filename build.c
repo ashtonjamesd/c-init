@@ -24,11 +24,9 @@ int main(int argc, char *argv[]) {
    
    char *arg = argv[1];
    Project p = comet_build_project();
-   if (strcmp(arg, "build") == 0) {
-       return comet_build(&p);
-   } else if (strcmp(arg, "fetch") == 0) {
-       return comet_fetch(&p);
-   }
-   
-   return 0;
+
+   comet_command(&p, "build", comet_build);
+   comet_command(&p, "fetch", comet_fetch);
+
+   return comet_run(&p, argc, argv);
 }
