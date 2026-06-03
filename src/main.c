@@ -185,8 +185,19 @@ int main(int argc, char *argv[]) {
     } else if (strcmp(command, "init") == 0) {
         return init();
     } else {
-        fprintf(stderr, "unknown command '%s'\n", command);
-        return 1;
+        int built = system("gcc " BUILD_C " -o " BUILD_OUTPUT);
+        if (built != 0) {
+            fprintf(stderr, "failed to build the build file.");
+            return 1;
+        }
+
+        char cmd[4096];
+        snprintf(cmd, sizeof(cmd), "./" BUILD_OUTPUT " %s", command);
+        int ran = system(cmd);
+        remove(BUILD_OUTPUT);
+
+        if (ran != 0) return 1;
+        return 0;
     }
     
     return 0;

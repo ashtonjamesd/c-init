@@ -472,7 +472,7 @@ bool setup_build_c(char *path) {
         "   Project p = comet_build_project();\n"
         "   \n"
         "   comet_on_build(&p, comet_build);\n"
-        "   comet_on_build(&p, comet_fetch);\n"
+        "   comet_on_fetch(&p, comet_fetch);\n"
         "   \n"
         "   return comet_run(&p, argc, argv);\n"
         "}\n";
