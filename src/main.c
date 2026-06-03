@@ -27,7 +27,7 @@ int build() {
         return 1;
     }
 
-    int ran = system("./" BUILD_OUTPUT);
+    int ran = system("./" BUILD_OUTPUT " build");
     remove(BUILD_OUTPUT);
 
     if (ran != 0) {
@@ -55,7 +55,7 @@ int fetch() {
         return 1;
     }
 
-    int ran = system("./" BUILD_OUTPUT);
+    int ran = system("./" BUILD_OUTPUT " fetch");
     remove(BUILD_OUTPUT);
 
     if (ran != 0) {
