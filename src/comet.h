@@ -159,6 +159,38 @@ bool setup_gitignore(char *path) {
     return true;
 }
 
+bool setup_common_h(char *path) {
+    FILE *f = fopen(path, "w");
+    if (!f) {
+        fprintf(stderr, "failed to setup '%s'", path);
+        return false;
+    }
+
+    char *content =
+        "#ifndef common_h\n"
+        "#define common_h\n"
+        "\n"
+        "#include <stdio.h>\n"
+        "#include <stdlib.h>\n"
+        "#include <string.h>\n"
+        "#include <stdbool.h>\n"
+        "#include <stdint.h>\n"
+        "#include <stddef.h>\n"
+        "#include <math.h>\n"
+        "#include <assert.h>\n"
+        "#include <errno.h>\n"
+        "#include <limits.h>\n"
+        "#include <ctype.h>\n"
+        "#include <time.h>\n"
+        "\n"
+        "#endif\n";
+
+    fwrite(content, 1, strlen(content), f);
+    fclose(f);
+
+    return true;
+}
+
 bool setup_main_c(char *path) {
     FILE *main_file = fopen(path, "w");
     if (!main_file) {
@@ -166,8 +198,8 @@ bool setup_main_c(char *path) {
         return false;
     }
 
-    char *content = 
-        "#include <stdio.h>\n"
+    char *content =
+        "#include \"common.h\"\n"
         "\n"
         "int main(void) {\n"
         "   printf(\"%s\", \"Hello, World!\\n\");\n"
@@ -465,6 +497,7 @@ bool setup_build_c(char *path) {
         "int comet_fetch(Project *p) {\n"
         "   // fetch a single header file from a github repo\n"
         "   if (!comet_fetch_header(\"ashtonjamesd/claim\", \"claim.h\")) return 1;\n"
+        "   if (!comet_fetch_header(\"ashtonjamesd/xalloc\", \"mem.h\")) return 1;\n"
         "   return 0;\n"
         "}\n"
         "\n"

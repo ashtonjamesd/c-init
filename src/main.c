@@ -115,6 +115,9 @@ int init() {
     if (!create_project_directory(TEST)) return 1;
     if (!create_project_directory(LIB)) return 1;
 
+    if (!create_project_file(SRC "/common.h")) return 1;
+    if (!setup_common_h(SRC "/common.h")) return 1;
+
     if (!create_project_file(SRC "/" MAIN_C)) return 1;
     if (!setup_main_c(SRC "/" MAIN_C)) return 1;
 
