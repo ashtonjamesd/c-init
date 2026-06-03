@@ -1,23 +1,25 @@
 #include "../lib/claim.h"
 #include "../src/comet.h"
 
-should(set_exe_name) {
-   Project p = comet_project();
+static Project p;
 
+describe("comet tests")
+
+before(setup_project) {
+   p = comet_project();
+}
+
+should(set_exe_name) {
    comet_build_exe_called(&p, "myapp");
    expect_eq(p.exe_name, "myapp");
 }
 
 should(set_compiler) {
-   Project p = comet_project();
-
    comet_build_with(&p, CLANG);
    expect(p.compiler == CLANG);
 }
 
 should(set_standard) {
-   Project p = comet_project();
-
    comet_standard(&p, C11);
    expect(p.standard == C11);
 
@@ -26,14 +28,11 @@ should(set_standard) {
 }
 
 should(set_cflags) {
-   Project p = comet_project();
-
    comet_cflags(&p, "-DDEBUG");
    expect_eq(p.cflags, "-DDEBUG");
 }
 
 should(set_warnings) {
-   Project p = comet_project();
    comet_warnings(&p, WARN_ALL | WARN_EXTRA);
    
    expect(p.warnings & WARN_ALL);
@@ -42,7 +41,6 @@ should(set_warnings) {
 }
 
 should(grow_sources_on_overflow) {
-   Project p = comet_project();
    expect(p.srcs_capacity == 1);
 
    comet_add_source_file(&p, "a.c");
@@ -54,7 +52,6 @@ should(grow_sources_on_overflow) {
 }
 
 should(add_source_file) {
-   Project p = comet_project();
    comet_add_source_file(&p, "src/main.c");
 
    expect(p.srcs_count == 1);
@@ -62,8 +59,6 @@ should(add_source_file) {
 }
 
 should(create_project_with_defaults) {
-   Project p = comet_project();
-
    expect(p.compiler == GCC);
    expect(p.srcs_count == 0);
    expect(p.srcs_capacity == 1);
@@ -83,7 +78,6 @@ static int another_cmd(Project *p) {
 }
 
 should(register_single_command) {
-   Project p = comet_project();
    comet_command(&p, "build", dummy_cmd);
 
    expect(p.command_count == 1);
@@ -92,7 +86,6 @@ should(register_single_command) {
 }
 
 should(register_multiple_commands) {
-   Project p = comet_project();
    comet_command(&p, "build", dummy_cmd);
    comet_command(&p, "fetch", another_cmd);
 
@@ -103,7 +96,6 @@ should(register_multiple_commands) {
 }
 
 should(run_matched_command) {
-   Project p = comet_project();
    comet_command(&p, "build", dummy_cmd);
    comet_command(&p, "fetch", another_cmd);
 
@@ -115,7 +107,6 @@ should(run_matched_command) {
 }
 
 should(run_unknown_command_returns_error) {
-   Project p = comet_project();
    comet_command(&p, "build", dummy_cmd);
 
    char *argv[] = {"comet", "nope"};
@@ -123,7 +114,6 @@ should(run_unknown_command_returns_error) {
 }
 
 should(run_with_no_args_returns_error) {
-   Project p = comet_project();
    comet_command(&p, "build", dummy_cmd);
 
    char *argv[] = {"comet"};
